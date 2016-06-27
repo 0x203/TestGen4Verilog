@@ -1,0 +1,234 @@
+`timescale 1ps/1ps
+
+module main;
+
+    // create regs for all outgoing signals
+    reg reset, r1, a2, a3, a4;
+    // create wires for all ingoing signals
+    wire a1, r2, r3, r4;
+    //create regs for all outgoing data-wires
+    reg [7:0] d2, d3;
+    //create wires for all ingoing data-wires
+    wire [7:0] d4;
+
+    //instanciate uut
+    Balsa_gcd I0 (r1, a1, r2, a2, d2, r3, a3, d3, r4, a4, d4, reset);
+
+    // set constants for all used data values
+    reg [7:0] testval_d2 = 8'd12;
+    reg [7:0] testval_d3 = 8'd16;
+    reg [7:0] testval_d4 = 8'd4;
+
+    time start;
+
+    // set the adjacency matrix
+    reg [8:0]matrix[0:8] = '{
+        9'b000000000,
+        9'b000000010,
+        9'b100000000,
+        9'b001000000,
+        9'b100000000,
+        9'b000010000,
+        9'b000000001,
+        9'b000000100,
+        9'b000101000};
+    // set occured to the numer of events
+    reg [0:8]occured = 9'b111111111;
+
+    enum { idle, active, resetphase } handshake;
+
+    initial begin
+        $display("TB_START: %d,%d,%d", testval_d2, testval_d3, testval_d4);
+
+        handshake = resetphase;
+        #10000
+        // set all outgoing signals to 0 and data to X
+        r1 = 0;
+        a2 = 0;
+        d2 = 8'bX;
+        a3 = 0;
+        d3 = 8'bX;
+        a4 = 0;
+        reset = 0;
+        #50000 reset = 1;
+        #50000 reset = 0;
+        #50000;
+
+        // check all incoming signals to be 0
+        if(a1!==0 || r2!==0 || r3!==0 || r4!==0) begin
+            $display("TB_ERROR: reset; a1=%d, r2=%d, r3=%d, r4=%d", a1, r2, r3, r4);
+            handshake = idle;
+            $finish;
+        end
+
+        start = $time;
+        handshake = active;
+        doOutputs();
+
+        wait(handshake == idle);
+        $finish;
+    end
+
+    task doOutputs;
+        bit didSomething;
+    begin
+        didSomething = 1;
+        // for every outgoing signal render a block of this
+        if(((matrix[0] & occured) == 0) && occured[0] == 1) begin
+            $display("TB_DEBUG (%d): out r1+", $time);
+            occured[0] = 0;
+            r1 = 1;
+        end else if(((matrix[3] & occured) == 0) && occured[3] == 1) begin
+            $display("TB_DEBUG (%d): out a2+, d2=%d", $time, testval_d2);
+            occured[3] = 0;
+            a2 = 1;
+            d2 = testval_d2;
+        end else if(((matrix[5] & occured) == 0) && occured[5] == 1) begin
+            $display("TB_DEBUG (%d): out a3+, d3=%d", $time, testval_d3);
+            occured[5] = 0;
+            a3 = 1;
+            d3 = testval_d3;
+        end else if(((matrix[7] & occured) == 0) && occured[7] == 1) begin
+            $display("TB_DEBUG (%d): out a4+", $time);
+            occured[7] = 0;
+            a4 = 1;
+        end else if(((matrix[8] & occured) == 0) && occured[8] == 1) begin
+            occured[8] = 0;
+        end else begin
+            didSomething = 0;
+        end
+
+        if(didSomething == 1) begin
+            doOutputs();
+        end
+    end
+    endtask
+
+    //pos a1
+    always @ (posedge a1) begin
+        if(handshake == active) begin
+            $display("TB_DEBUG (%d): in a1+", $time);
+            if(((matrix[1] & occured) == 0) && occured[1] == 1) begin
+                occured[1] = 0;
+                if(occured !== 0) begin
+                    $display("TB_ERROR: occured");
+                    handshake = idle;
+                end
+                $display("TB_DEBUG (%d): out r1-", $time);
+                r1 = 0;
+            end else begin
+                $display("TB_ERROR: a1+");
+                handshake = idle;
+            end
+        end
+    end
+
+    //neg a1
+    always @ (negedge a1) begin
+        if(handshake == active) begin
+            $display("TB_DEBUG (%d): in a1-", $time);
+            if(a1===0 && r2===0 && r3===0 && r4===0) begin
+                $display("TB_SUCCESS: %d", ($time-start));
+                handshake = idle;
+            end else begin
+                $display("TB_ERROR: a1+ Signals");
+                handshake = idle;
+            end
+        end
+    end
+
+    //pos r2
+    always @ (posedge r2) begin
+        if(handshake == active) begin
+            $display("TB_DEBUG (%d): in r2+", $time);
+            if(((matrix[2] & occured) == 0) && occured[2] == 1) begin
+                occured[2] = 0;
+                doOutputs();
+            end else begin
+                $display("TB_ERROR: r2+");
+                handshake = idle;
+            end
+        end
+    end
+
+    //neg r2
+    always @ (negedge r2) begin
+        if(handshake == active) begin
+            $display("TB_DEBUG (%d): in r2-", $time);
+            if(a2 == 1) begin
+                //d2 = 8'bZ;
+                $display("TB_DEBUG (%d): out a2-", $time);
+                a2 = 0;
+            end else begin
+                $display("TB_ERROR: r2-");
+                handshake = idle;
+            end
+        end
+    end
+
+    //pos r3
+    always @ (posedge r3) begin
+        if(handshake == active) begin
+            $display("TB_DEBUG (%d): in r3+", $time);
+            if(((matrix[4] & occured) == 0) && occured[4] == 1) begin
+                occured[4] = 0;
+                doOutputs();
+            end else begin
+                $display("TB_ERROR: r3+");
+                handshake = idle;
+            end
+        end
+    end
+
+    //neg r3
+    always @ (negedge r3) begin
+        if(handshake == active) begin
+            $display("TB_DEBUG (%d): in r3-", $time);
+            if(a3 == 1) begin
+                //d3 = 8'bZ;
+                $display("TB_DEBUG (%d): out a3-", $time);
+                a3 = 0;
+            end
+            else begin
+                $display("TB_ERROR: r3-");
+                handshake = idle;
+            end
+        end
+    end
+
+    //pos r4
+    always @ (posedge r4) begin
+        if(handshake == active) begin
+            $display("TB_DEBUG (%d): in r4+, d4=%d", $time, d4);
+            // $display("Matrix[6]: %b", matrix[6]);
+            // $display("Schon gewesen: %b", occured);
+            // $display("And: %b", matrix[6] & occured);
+            if(((matrix[6] & occured) == 0) && occured[6] == 1) begin
+                if(d4 == testval_d4) begin
+                    occured[6] = 0;
+                    doOutputs();
+                end else begin
+                    $display("TB_ERROR: d4 eval; %d != %d", testval_d4, d4);
+                    handshake = idle;
+                end
+            end else begin
+                $display("TB_ERROR: r4+");
+                handshake = idle;
+            end
+        end
+    end
+
+    //neg r4
+    always @ (negedge r4) begin
+        if(handshake == active) begin
+            $display("TB_DEBUG (%d): in r4-", $time);
+            if(a4 == 1) begin
+                $display("TB_DEBUG (%d): out a4-", $time);
+                a4 = 0;
+            end else begin
+                $display("TB_ERROR: r4-");
+                handshake = idle;
+            end
+        end
+    end
+endmodule
