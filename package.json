@@ -10,5 +10,10 @@
   "license": "MIT",
   "dependencies": {
     "commander": "^2.9.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.hpi.de:cornelius.bock/TestGen4Verilog.git"
   }
 }
