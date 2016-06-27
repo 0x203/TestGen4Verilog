@@ -2,19 +2,35 @@
 
 module main;
 
+    //TODO X:1 okay?
+
     // create regs for all outgoing signals
-    reg reset, r1, a2, a3, a4;
+    reg reset;
+    {{#each outgoing.signals}}
+    reg {{name}};
+    {{/each}}
+
     // create wires for all ingoing signals
-    wire a1, r2, r3, r4;
+    {{#each ingoing.signals}}
+    wire {{name}};
+    {{/each}}
+
     //create regs for all outgoing data-wires
-    reg [7:0] d2, d3;
+    {{#each outgoing.data}}
+    reg [{{width}}:1] {{name}};
+    {{/each}}
+
     //create wires for all ingoing data-wires
-    wire [7:0] d4;
+    {{#each ingoing.data}}
+    wire [{{width}}:1] {{name}};
+    {{/each}}
 
     //instanciate uut
+    // TODO!!!
     Balsa_gcd I0 (r1, a1, r2, a2, d2, r3, a3, d3, r4, a4, d4, reset);
 
     // set constants for all used data values
+    // TODO!!!
     reg [7:0] testval_d2 = 8'd12;
     reg [7:0] testval_d3 = 8'd16;
     reg [7:0] testval_d4 = 8'd4;
@@ -22,18 +38,14 @@ module main;
     time start;
 
     // set the adjacency matrix
-    reg [8:0]matrix[0:8] = '{
-        9'b000000000,
-        9'b000000010,
-        9'b100000000,
-        9'b001000000,
-        9'b100000000,
-        9'b000010000,
-        9'b000000001,
-        9'b000000100,
-        9'b000101000};
+    reg [{{eventcountMinusOne}}:0]matrix[0:{{eventcountMinusOne}}] = '{
+      {{#each matrix}}
+        {{eventcount}}'b{{#each .}}{{.}}{{/each}}{{#if @last}} }; {{else}},
+{{/if}}
+      {{/each}}
+
     // set occured to the numer of events
-    reg [0:8]occured = 9'b111111111;
+    reg [0:{{eventcountMinusOne}}]occured = {{eventcount}}'b{{#each matrix}}1{{/each}};
 
     enum { idle, active, resetphase } handshake;
 
@@ -43,12 +55,12 @@ module main;
         handshake = resetphase;
         #10000
         // set all outgoing signals to 0 and data to X
-        r1 = 0;
-        a2 = 0;
-        d2 = 8'bX;
-        a3 = 0;
-        d3 = 8'bX;
-        a4 = 0;
+        {{#each outgoing.signals}}
+        {{name}} = 0;
+        {{/each}}
+        {{#each outgoing.data}}
+        {{name}} = {{width}}'bX;
+        {{/each}}
         reset = 0;
         #50000 reset = 1;
         #50000 reset = 0;
