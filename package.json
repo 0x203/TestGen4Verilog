@@ -7,12 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-     "testgen4verilog": "./index.js"
+    "testgen4verilog": "./index.js"
   },
   "author": "Cornelius Bock & Norman Kluge",
   "license": "MIT",
   "dependencies": {
-    "commander": "^2.9.0"
+    "commander": "^2.9.0",
+    "handlebars": "^4.0.5"
   },
   "devDependencies": {},
   "repository": {
