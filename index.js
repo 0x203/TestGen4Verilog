@@ -5,7 +5,7 @@ const generateVerilogTest = require('./verilog-test-gen');
 const fs = require('fs');
 
 const STANDARD_OUTFILE = 'test.v';
-const STANDARD_TEMPLATE = 'testbench_template.v.handlebars';
+const STANDARD_TEMPLATE = __dirname + '/testbench_template.v.handlebars';
 
 program
 	.arguments('<testfile>')
