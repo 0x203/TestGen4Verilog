@@ -13,18 +13,18 @@ handlebars.registerHelper('counterType', function(signalType) {
 });
 
 function generateVerilogTest(test, template, cb) {
-	//try {
-		console.log('Pre-compiling template');
+	try {
+		console.log('Pre-compiling template.');
 		const compiledTemplate = handlebars.compile(template);
-		console.log('Transforming test to usable data by template');
+		console.log('Transforming test to usable data by template.');
 		const transformed = transformData(test);
-		console.log(transformed);
-		console.log('Compiling template');
+		// console.log(transformed);
+		console.log('Compiling template.');
 		const rendered = compiledTemplate(transformed);
 		cb(null, rendered)
-	//} catch(err) {
-	//	return cb(err);
-	//}
+	} catch(err) {
+		return cb(err);
+	}
 }
 
 function transformData(test) {
@@ -72,11 +72,11 @@ function tranformPortsAndEvents(ports, nodes) {
 			channel: channelId
 		}
 		if (activeSense && direction == 'input') {
-			console.log("channel %d has outgoing data as active input", channelId);
+			//console.log("channel %d has outgoing data as active input", channelId);
 			thisOutgoing.dataWidth = dataWidth;
 		}
 		else if (!activeSense && direction == 'output'){
-			console.log("channel %d has outgoing data as passive output", channelId);
+			//console.log("channel %d has outgoing data as passive output", channelId);
 			thisOutgoing.dataWidth = dataWidth;
 		}
 		outgoing.push(thisOutgoing);
@@ -97,11 +97,11 @@ function tranformPortsAndEvents(ports, nodes) {
 			events: transformedIngoing
 		}
 		if (!activeSense && direction == 'input'){
-			console.log("channel %d has ingoing data as passive input", channelId);
+			//console.log("channel %d has ingoing data as passive input", channelId);
 			thisIngoing.dataWidth = dataWidth;
 		}
 		else if (activeSense && direction == 'output'){
-			console.log("channel %d has ingoing data as active output", channelId);
+			//console.log("channel %d has ingoing data as active output", channelId);
 			thisIngoing.dataWidth = dataWidth;
 		}
 		ingoing.push(thisIngoing);

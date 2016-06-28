@@ -14,7 +14,7 @@ program
 	.action(function(testfile){
 		const outfile = program.outfile || STANDARD_OUTFILE;
 		const templatefile = program.templatefile || STANDARD_TEMPLATE;
-		console.log('should read testfile %s and write output to %s', testfile, outfile);
+		console.log("Will read test from '%s' and write generated testbench to '%s'.", testfile, outfile);
 
 		fs.readFile(testfile, 'utf8', function (err, jsontest) {
 			if (err) {
@@ -27,14 +27,14 @@ program
 					process.exit(1);
 				}
 				const test = JSON.parse(jsontest);
-				console.log('Will generate test');
+				console.log('Will generate test.');
 				generateVerilogTest(test, template, function(err, data) {
-					console.log('Generated test, writing it to file:');
+					console.log('Generated test, writing it to file.');
 					fs.writeFile(outfile, data, function(err) {
 						if(err) {
 							console.error("Can't write test out: " + err);
 						}
-						console.log("The file was saved! I'm done with everything.");
+						console.log("Testbench saved in '%s'! I'm done with everything.", outfile);
 					});
 				});
 			});
