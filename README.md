@@ -13,7 +13,7 @@ Here's the answer:
 Installation
 ------------
 
-Istall [Node.js](https://nodejs.org/) and then:
+Install [Node.js](https://nodejs.org/) and then:
 
     npm install -g testgen4verilog
 
