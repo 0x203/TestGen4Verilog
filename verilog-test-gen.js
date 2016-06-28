@@ -32,26 +32,82 @@ function transformData(test) {
 		throw "UUT must have a name!";
 	if(!test.ports)
 		throw "the ports should be defined!";
+	if(!test.edges)
+		throw "the edges should be defined!";
+	if(!test.nodes)
+		throw "the nodes should be defined!";
 
 	const eventcount = test.nodes.length;
+	const matrix = createMatrix(eventcount, test.edges);
 
+	const {uutParameters, outgoing, ingoing, activeEvents} = tranformPortsAndEvents(test.ports, test.nodes);
+
+	return {
+		uutName: test.name,
+		uutParameters,
+		matrix,
+		outgoing,
+		ingoing,
+		eventcount,
+		eventcountMinusOne: eventcount - 1,
+		activeEvents
+	};
+}
+
+function tranformPortsAndEvents(ports, nodes) {
 	let uutParameters = [];
 	let outgoing = [];
 	let ingoing = [];
 	let activeEvents = [];
 
-	const matrix = createMatrix(eventcount, test.edges);
+	for(let {activeSense, direction, name, channelId, dataWidth} of ports) {
+		const withData = direction == 'input' || direction == 'output';
 
-	return {
-		uutName: test.name,
-		uutParameters,
-		outgoing,
-		ingoing,
-		eventcount,
-		eventcountMinusOne: eventcount - 1,
-		matrix,
-		activeEvents
-	};
+		// append uutParameters to the list
+		uutParameters.push({channel: channelId, data: withData});
+
+		// append outgoing signals specification
+		let thisOutgoing = {
+			type: (activeSense) ? 'ack' : 'req',
+			channel: channelId
+		}
+		if (activeSense && direction == 'input')
+			thisOutgoing.dataWidth = dataWidth;
+		else if (!activeSense && direction == 'output')
+			thisOutgoing.dataWidth = dataWidth;
+		outgoing.push(thisOutgoing);
+
+		const {ingoingEvents, outgoingEvents} = splitIngoingFromOutgoing(activeSense, channelId, nodes);
+
+
+		for (let {type, id, channelId, data} of ingoingEvents) {
+				type;
+		}
+
+	}
+
+	return {uutParameters, outgoing, ingoing, activeEvents};
+}
+
+function splitIngoingFromOutgoing(activeSense, channelId, allEvents) {
+	const eventsOnThisPort = allEvents.filter(event => event.channelId == channelId);
+	const reqs = eventsOnThisPort.filter(event => shortType(event.type) == 'req');
+	const acks = eventsOnThisPort.filter(event => shortType(event.type) == 'ack');
+	// activeSense as seen from the inside, e.g. activate is a passive port because it's triggered from the outside
+	if(activeSense) {
+		return {ingoingEvents: acks, outgoingEvents: reqs}
+	} else {
+		return {ingoingEvents: reqs, outgoingEvents: acks}
+	}
+}
+
+function shortType(type) {
+	if (type == 'Request' || type == 'DataRequest')
+		return 'req';
+	else if (type == 'Acknowledge' || type == 'DataAcknowledge')
+		return 'ack';
+	else
+		throw "Found unknown type - no Acknowledge or Request or DataAcknowledge or DataRequest: " + type;
 }
 
 function createMatrix(eventcount, edges) {

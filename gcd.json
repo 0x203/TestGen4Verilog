@@ -11,19 +11,22 @@
          "activeSense": true,
          "direction": "input",
          "name": "ain",
-         "channelId": 2
+         "channelId": 2,
+         "dataWidth": 8
       },
       {
          "activeSense": true,
          "direction": "input",
          "name": "bin",
-         "channelId": 3
+         "channelId": 3,
+         "dataWidth": 8
       },
       {
          "activeSense": true,
          "direction": "output",
          "name": "o",
-         "channelId": 4
+         "channelId": 4,
+         "dataWidth": 8
       }
    ],
    "nodes": [
