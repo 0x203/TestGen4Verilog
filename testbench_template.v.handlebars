@@ -118,131 +118,56 @@ module main;
     end
     endtask
 
-    //pos a1
-    always @ (posedge a1) begin
+    // TODO: don't use events here, but passive ports.
+    // there could be multiple events on the same port, this would got wrong with this style here
+    {{#each events}}
+    {{#unless activeSense}}
+    always @ (posedge {{type}}{{channel}}) begin
         if(handshake == active) begin
-            $display("TB_DEBUG (%d): in a1+", $time);
-            if(((matrix[1] & occured) == 0) && occured[1] == 1) begin
-                occured[1] = 0;
-                if(occured !== 0) begin
-                    $display("TB_ERROR: occured");
-                    handshake = idle;
-                end
-                $display("TB_DEBUG (%d): out r1-", $time);
-                r1 = 0;
-            end else begin
-                $display("TB_ERROR: a1+");
-                handshake = idle;
-            end
-        end
-    end
-
-    //neg a1
-    always @ (negedge a1) begin
-        if(handshake == active) begin
-            $display("TB_DEBUG (%d): in a1-", $time);
-            if(a1===0 && r2===0 && r3===0 && r4===0) begin
-                $display("TB_SUCCESS: %d", ($time-start));
-                handshake = idle;
-            end else begin
-                $display("TB_ERROR: a1+ Signals");
-                handshake = idle;
-            end
-        end
-    end
-
-    //pos r2
-    always @ (posedge r2) begin
-        if(handshake == active) begin
-            $display("TB_DEBUG (%d): in r2+", $time);
-            if(((matrix[2] & occured) == 0) && occured[2] == 1) begin
-                occured[2] = 0;
+            $display("TB_DEBUG (%d): in {{type}}{{channel}}+{{#if
+                data}}, data{{channel}}=%d{{/if}}", $time{{#if
+                data}}, data{{channel}}{{/if}});
+            if(((matrix[{{@index}}] & occured) == 0) && occured[{{@index}}] == 1) begin
+                {{#if data}}
+                if(data{{channel}} == testval{{@index}}_data{{channel}}) begin
+                {{/if}}
+                occured[{{@index}}] = 0;
                 doOutputs();
-            end else begin
-                $display("TB_ERROR: r2+");
-                handshake = idle;
-            end
-        end
-    end
-
-    //neg r2
-    always @ (negedge r2) begin
-        if(handshake == active) begin
-            $display("TB_DEBUG (%d): in r2-", $time);
-            if(a2 == 1) begin
-                //d2 = 8'bZ;
-                $display("TB_DEBUG (%d): out a2-", $time);
-                a2 = 0;
-            end else begin
-                $display("TB_ERROR: r2-");
-                handshake = idle;
-            end
-        end
-    end
-
-    //pos r3
-    always @ (posedge r3) begin
-        if(handshake == active) begin
-            $display("TB_DEBUG (%d): in r3+", $time);
-            if(((matrix[4] & occured) == 0) && occured[4] == 1) begin
-                occured[4] = 0;
-                doOutputs();
-            end else begin
-                $display("TB_ERROR: r3+");
-                handshake = idle;
-            end
-        end
-    end
-
-    //neg r3
-    always @ (negedge r3) begin
-        if(handshake == active) begin
-            $display("TB_DEBUG (%d): in r3-", $time);
-            if(a3 == 1) begin
-                //d3 = 8'bZ;
-                $display("TB_DEBUG (%d): out a3-", $time);
-                a3 = 0;
-            end
-            else begin
-                $display("TB_ERROR: r3-");
-                handshake = idle;
-            end
-        end
-    end
-
-    //pos r4
-    always @ (posedge r4) begin
-        if(handshake == active) begin
-            $display("TB_DEBUG (%d): in r4+, d4=%d", $time, d4);
-            // $display("Matrix[6]: %b", matrix[6]);
-            // $display("Schon gewesen: %b", occured);
-            // $display("And: %b", matrix[6] & occured);
-            if(((matrix[6] & occured) == 0) && occured[6] == 1) begin
-                if(d4 == testval_d4) begin
-                    occured[6] = 0;
-                    doOutputs();
+                {{#if data}}
                 end else begin
-                    $display("TB_ERROR: d4 eval; %d != %d", testval_d4, d4);
+                    $display("TB_ERROR: data{{channel}} eval; %d != %d", testval{{@index}}_data{{channel}}, data{{channel}});
                     handshake = idle;
                 end
+                {{/if}}
             end else begin
-                $display("TB_ERROR: r4+");
+                $display("TB_ERROR: {{type}}{{channel}}+");
                 handshake = idle;
             end
         end
     end
 
-    //neg r4
-    always @ (negedge r4) begin
+    always @ (negedge {{type}}{{channel}}) begin
         if(handshake == active) begin
-            $display("TB_DEBUG (%d): in r4-", $time);
+            $display("TB_DEBUG (%d): in {{type}}{{channel}}-", $time);
+            // TODO use helper to create correct counter-type here
             if(a4 == 1) begin
                 $display("TB_DEBUG (%d): out a4-", $time);
                 a4 = 0;
             end else begin
-                $display("TB_ERROR: r4-");
+                $display("TB_ERROR: {{type}}{{channel}}-");
                 handshake = idle;
             end
         end
     end
+
+    {{/unless}}
+    {{/each}}
+
+    // TODO: at the very last event: check if it's the last and check for remaining handshakes
+    // Problem: what if there are multiple possible last events (which can come in parallel) or such things?!
+
+    //  if(occured !== 0) begin
+    //      $display("TB_ERROR: occured");
+    //      handshake = idle;
+    //  end
 endmodule
