@@ -1,8 +1,7 @@
 `timescale 1ps/1ps
 
 module main;
-
-    //TODO X:1 okay?
+    //TODO Norman: ist [8:1] für Daten okay?
 
     // create regs for all outgoing signals including data
     reg reset;
@@ -51,7 +50,7 @@ module main;
     enum { idle, active, resetphase } handshake;
 
     initial begin
-        $display("TB_START: %d,%d,%d", testval_d2, testval_d3, testval_d4);
+        $display("TB_START");
 
         handshake = resetphase;
         #10000
@@ -71,7 +70,7 @@ module main;
         if(
             {{#each ingoing}}{{type}}{{channel}} !== 0{{#unless @last}} || {{/unless}}{{/each}}
         ) begin
-            $display("TB_ERROR: reset; a1=%d, r2=%d, r3=%d, r4=%d", a1, r2, r3, r4);
+            $display("TB_ERROR: reset; {{#each ingoing}}{{type}}{{channel}}=%d{{#unless @last}}, {{/unless}}{{/each}}", {{#each ingoing}}{{type}}{{channel}}{{#unless @last}}, {{/unless}}{{/each}});
             handshake = idle;
             $finish;
         end
@@ -90,8 +89,8 @@ module main;
         didSomething = 1;
         // for every outgoing signal render a block of this
         {{#each activeEvents}}
-        {{#unless @first}}end else {{/unless}}
-        if(((matrix[{{id}}] & occured) == 0) && occured[{{id}}] == 1)
+        {{#unless @first}}end else {{/unless
+        }}if(((matrix[{{id}}] & occured) == 0) && occured[{{id}}] == 1)
         begin
             $display("TB_DEBUG (%d): out {{type}}{{channel}}+", $time);
             occured[{{id}}] = 0;
@@ -122,8 +121,8 @@ module main;
                 dataWidth}}, data{{channel}}{{/if}});
             // one if block for each event on this port
             {{#each events}}
-            {{#unless @first}}end else {{/unless}}
-            if(((matrix[{{eventIndex}}] & occured) == 0) && occured[{{eventIndex}}] == 1) begin
+            {{#unless @first}}end else {{/unless
+            }}if(((matrix[{{eventIndex}}] & occured) == 0) && occured[{{eventIndex}}] == 1) begin
                 {{#if data}}
                 if(data{{../channel}} == testval{{eventIndex}}_data{{../channel}}) begin
                 {{/if}}
