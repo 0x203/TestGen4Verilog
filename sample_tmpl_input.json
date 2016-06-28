@@ -1,25 +1,25 @@
 {
 	"outgoing": {
 		"signals": [
-			{"name": "r1"},
-			{"name": "a2"},
-			{"name": "a3"},
-			{"name": "a4"}
+			{"name": "req1"},
+			{"name": "ack2"},
+			{"name": "ack3"},
+			{"name": "ack4"}
 		],
 		"data": [
-			{"name": "d2", "width": 8},
-			{"name": "d3", "width": 8}
+			{"name": "data2", "width": 8},
+			{"name": "data3", "width": 8}
 		]
 	},
 	"ingoing": {
 		"signals": [
-			{"name": "a1"},
-			{"name": "r2"},
-			{"name": "r3"},
-			{"name": "r4"}
+			{"name": "ack1"},
+			{"name": "req2"},
+			{"name": "req3"},
+			{"name": "req4"}
 		],
 		"data": [
-			{"name": "d4", "width": 8}
+			{"name": "data4", "width": 8}
 		]
 	},
 	"eventcount": 9,
@@ -34,5 +34,60 @@
 		[0, 0, 0, 0, 0, 0, 0, 0, 1],
 		[0, 0, 0, 0, 0, 0, 1, 0, 0],
 		[0, 0, 0, 1, 0, 1, 0, 0, 0]
+	],
+	"events": [
+		{
+			"activeSense": 1,
+			"channel": 1,
+			"type": "req"
+		},
+		{
+			"activeSense": 0,
+			"channel": 1,
+			"type": "ack"
+		},
+		{
+			"activeSense": 0,
+			"channel": 2,
+			"type": "req"
+		},
+		{
+			"activeSense": 1,
+			"channel": 2,
+			"type": "ack",
+			"dataWidth": 8,
+			"dataWidthMinus1": 7,
+			"data": 16
+		},
+		{
+			"activeSense": 0,
+			"channel": 3,
+			"type": "req"
+		},
+		{
+			"activeSense": 1,
+			"channel": 3,
+			"type": "ack",
+			"dataWidth": 8,
+			"dataWidthMinus1": 7,
+			"data": 8
+		},
+		{
+			"activeSense": 0,
+			"channel": 4,
+			"type": "req",
+			"dataWidth": 8,
+			"dataWidthMinus1": 7,
+			"data": 8
+		},
+		{
+			"activeSense": 1,
+			"channel": 4,
+			"type": "ack"
+		},
+		{
+			"activeSense": 1,
+			"type": "merge"
+		}
 	]
 }

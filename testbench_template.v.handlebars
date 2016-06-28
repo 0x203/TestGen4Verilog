@@ -30,10 +30,11 @@ module main;
     Balsa_gcd I0 (r1, a1, r2, a2, d2, r3, a3, d3, r4, a4, d4, reset);
 
     // set constants for all used data values
-    // TODO!!!
-    reg [7:0] testval_d2 = 8'd12;
-    reg [7:0] testval_d3 = 8'd16;
-    reg [7:0] testval_d4 = 8'd4;
+    {{#each events}}
+    {{#if data}}
+    req [{{dataWidthMinus1}}:0] testval{{@index}}_data{{channel}} = {{dataWidth}}'d{{data}};
+    {{/if}}
+    {{/each}}
 
     time start;
 
@@ -66,8 +67,10 @@ module main;
         #50000 reset = 0;
         #50000;
 
-        // check all incoming signals to be 0
-        if(a1!==0 || r2!==0 || r3!==0 || r4!==0) begin
+        // check all ingoing signals to be 0
+        if(
+            {{#each ingoing.signals}}{{name}} !== 0{{#unless @last}} || {{/unless}}{{/each}}
+        ) begin
             $display("TB_ERROR: reset; a1=%d, r2=%d, r3=%d, r4=%d", a1, r2, r3, r4);
             handshake = idle;
             $finish;
@@ -86,26 +89,25 @@ module main;
     begin
         didSomething = 1;
         // for every outgoing signal render a block of this
-        if(((matrix[0] & occured) == 0) && occured[0] == 1) begin
-            $display("TB_DEBUG (%d): out r1+", $time);
-            occured[0] = 0;
-            r1 = 1;
-        end else if(((matrix[3] & occured) == 0) && occured[3] == 1) begin
-            $display("TB_DEBUG (%d): out a2+, d2=%d", $time, testval_d2);
-            occured[3] = 0;
-            a2 = 1;
-            d2 = testval_d2;
-        end else if(((matrix[5] & occured) == 0) && occured[5] == 1) begin
-            $display("TB_DEBUG (%d): out a3+, d3=%d", $time, testval_d3);
-            occured[5] = 0;
-            a3 = 1;
-            d3 = testval_d3;
-        end else if(((matrix[7] & occured) == 0) && occured[7] == 1) begin
-            $display("TB_DEBUG (%d): out a4+", $time);
-            occured[7] = 0;
-            a4 = 1;
-        end else if(((matrix[8] & occured) == 0) && occured[8] == 1) begin
-            occured[8] = 0;
+        if (1 == 0) begin
+            $display("I'll never happen. I'm just a dummy.");
+        {{#each events}}
+        {{#if activeSense}}
+        end else if(
+            ((matrix[{{@index}}] & occured) == 0) && occured[{{@index}}] == 1
+        ) begin
+            $display("TB_DEBUG (%d): out {{type}}{{channel}}+", $time);
+            occured[{{@index}}] = 0;
+            {{#if data}}
+            // set data channel on predefined value
+            data{{channel}} = testval{{@index}}_data{{channel}};
+            {{/if}}
+            {{#if channel}}
+            // set handshake signal
+            {{type}}{{channel}} = 1;
+            {{/if}}
+        {{/if}}
+        {{/each}}
         end else begin
             didSomething = 0;
         end
