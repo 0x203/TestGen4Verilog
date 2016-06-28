@@ -13,15 +13,18 @@ handlebars.registerHelper('counterType', function(signalType) {
 });
 
 function generateVerilogTest(test, template, cb) {
-	try {
+	//try {
+		console.log('Pre-compiling template');
 		const compiledTemplate = handlebars.compile(template);
+		console.log('Transforming test to usable data by template');
 		const transformed = transformData(test);
 		console.log(transformed);
+		console.log('Compiling template');
 		const rendered = compiledTemplate(transformed);
 		cb(null, rendered)
-	} catch(err) {
-		return cb(err);
-	}
+	//} catch(err) {
+	//	return cb(err);
+	//}
 }
 
 function transformData(test) {
@@ -35,8 +38,9 @@ function transformData(test) {
 	let uutParameters = [];
 	let outgoing = [];
 	let ingoing = [];
-	let matrix = Array(eventcount).fill(Array(eventcount).fill(0));
 	let activeEvents = [];
+
+	const matrix = createMatrix(eventcount, test.edges);
 
 	return {
 		uutName: test.name,
@@ -48,6 +52,21 @@ function transformData(test) {
 		matrix,
 		activeEvents
 	};
+}
+
+function createMatrix(eventcount, edges) {
+	let matrix = [];
+	// initialize it with some new, zero-filled array
+	for (let i = eventcount - 1; i >= 0; i--) {
+		matrix[i] = Array(eventcount).fill(0);
+	}
+
+	// set 1s for all the edges
+	for (let [source, target] of edges) {
+		//console.log("setting 1 for edge %d -> %d", source, target);
+		matrix[target - 1][source - 1] = 1;
+	}
+	return matrix;
 }
 
 module.exports = generateVerilogTest;
