@@ -8,12 +8,14 @@ const STANDARD_OUTFILE = 'test.v';
 const STANDARD_TEMPLATE = __dirname + '/testbench_template.v.handlebars';
 
 program
-	.arguments('<testfile>')
 	.option('-o, --output [file]', 'the file the generated test will be written into, defaults to ' + STANDARD_OUTFILE)
 	.option('-t, --template [file]', 'the file the template is read from, defaults to ' + STANDARD_OUTFILE)
+	.arguments('<testfile>')
 	.action(function(testfile){
-		const outfile = program.outfile || STANDARD_OUTFILE;
-		const templatefile = program.templatefile || STANDARD_TEMPLATE;
+		console.log(program);
+		console.log(program.outfile);
+		const outfile = program.output || STANDARD_OUTFILE;
+		const templatefile = program.template || STANDARD_TEMPLATE;
 		console.log("Will read test from '%s' and write generated testbench to '%s'.", testfile, outfile);
 
 		fs.readFile(testfile, 'utf8', function (err, jsontest) {
