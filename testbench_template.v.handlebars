@@ -31,9 +31,10 @@ module main;
     {{/if}}
 {{/each}}
 
-    //instanciate uut
-    // TODO!!!
-    Balsa_gcd I0 (r1, a1, r2, a2, d2, r3, a3, d3, r4, a4, d4, reset);
+    //instanciate uut with a reqX, an ackX and possibly a dataX for each channel
+    {{uutName}} I0 (
+        {{#each uutParameters}}req{{channel}}, ack{{channel}}, {{#if data}}data{{channel}}, {{/if}}{{/each}}reset
+    );
 
     time start;
 

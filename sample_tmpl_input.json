@@ -1,4 +1,11 @@
 {
+	"uutName": "Balsa_gcd",
+	"uutParameters": [
+		{"channel": 1, "data": false},
+		{"channel": 2, "data": true},
+		{"channel": 3, "data": true},
+		{"channel": 4, "data": true}
+	],
 	"outgoing": [
 		{
 			"type": "req",
