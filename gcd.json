@@ -1,5 +1,32 @@
 {
-   "nodes":[
+   "name": "GCD",
+   "ports": [
+      {
+         "activeSense": false,
+         "direction": "nonput",
+         "name": "activate",
+         "channelId": 1
+      },
+      {
+         "activeSense": true,
+         "direction": "input",
+         "name": "ain",
+         "channelId": 2
+      },
+      {
+         "activeSense": true,
+         "direction": "input",
+         "name": "bin",
+         "channelId": 3
+      },
+      {
+         "activeSense": true,
+         "direction": "output",
+         "name": "o",
+         "channelId": 4
+      }
+   ],
+   "nodes": [
       {
          "type":"DataAcknowledge",
          "id":8,
@@ -61,42 +88,15 @@
       }
    ],
    "edges":[
-      [
-         6,
-         8
-      ],
-      [
-         7,
-         4
-      ],
-      [
-         1,
-         9
-      ],
-      [
-         3,
-         6
-      ],
-      [
-         5,
-         1
-      ],
-      [
-         9,
-         2
-      ],
-      [
-         3,
-         5
-      ],
-      [
-         2,
-         7
-      ],
-      [
-         8,
-         9
-      ]
+      [6, 8],
+      [7, 4],
+      [1, 9],
+      [3, 6],
+      [5, 1],
+      [9, 2],
+      [3, 5],
+      [2, 7],
+      [8, 9]
    ]
 }
 
