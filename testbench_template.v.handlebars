@@ -4,34 +4,32 @@ module main;
 
     //TODO X:1 okay?
 
-    // create regs for all outgoing signals
+    // create regs for all outgoing signals including data
     reg reset;
-    {{#each outgoing.signals}}
-    reg {{name}};
-    {{/each}}
-
-    //create regs for all outgoing data-wires
-    {{#each outgoing.data}}
-    reg [{{width}}:1] {{name}};
-    {{/each}}
+{{#each outgoing}}
+    reg {{type}}{{channel}};
+    {{#if dataWidth}}
+        reg [{{dataWidth}}:1] data{{channel}};
+    {{/if}}
+{{/each}}
 
     // set constants for outgoing data values
-    {{#each activeEvents}}
+{{#each activeEvents}}
     {{#if data}}
-    reg [{{dataWidth}}:1] testval{{id}}_data{{channel}} = {{dataWidth}}'d{{data}};
+        reg [{{dataWidth}}:1] testval{{id}}_data{{channel}} = {{dataWidth}}'d{{data}};
     {{/if}}
-    {{/each}}
+{{/each}}
 
     // create wires and testvals for all ingoing signals and data
-    {{#each ingoing}}
+{{#each ingoing}}
     wire {{type}}{{channel}};
     {{#if dataWidth}}
-    wire [{{dataWidth}}:1] data{{channel}};
-    {{#each events}}
-    reg [{{../dataWidth}}:1] testval{{eventIndex}}_data{{../channel}} = {{../dataWidth}}'d{{data}}
-    {{/each}}
+        wire [{{dataWidth}}:1] data{{channel}};
+        {{#each events}}
+            reg [{{../dataWidth}}:1] testval{{eventIndex}}_data{{../channel}} = {{../dataWidth}}'d{{data}}
+        {{/each}}
     {{/if}}
-    {{/each}}
+{{/each}}
 
     //instanciate uut
     // TODO!!!

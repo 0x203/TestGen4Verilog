@@ -1,16 +1,24 @@
 {
-	"outgoing": {
-		"signals": [
-			{"name": "req1"},
-			{"name": "ack2"},
-			{"name": "ack3"},
-			{"name": "ack4"}
-		],
-		"data": [
-			{"name": "data2", "width": 8},
-			{"name": "data3", "width": 8}
-		]
-	},
+	"outgoing": [
+		{
+			"type": "req",
+			"channel": 1
+		},
+		{
+			"type": "ack",
+			"channel": 2,
+			"dataWidth": 8
+		},
+		{
+			"type": "ack",
+			"channel": 3,
+			"dataWidth": 8
+		},
+		{
+			"type": "ack",
+			"channel": 4
+		}
+	],
 	"ingoing": [
 		{
 			"type": "ack",
