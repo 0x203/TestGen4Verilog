@@ -15,23 +15,23 @@
 		{
 			"type": "ack",
 			"channel": 1,
-			"events": [1]
+			"events": [{"eventIndex": 1}]
 		},
 		{
 			"type": "req",
 			"channel": 2,
-			"events": [2]
+			"events": [{"eventIndex": 2}]
 		},
 		{
 			"type": "req",
 			"channel": 3,
-			"events": [4]
+			"events": [{"eventIndex": 4}]
 		},
 		{
 			"type": "req",
 			"channel": 4,
 			"dataWidth": 8,
-			"events": [6]
+			"events": [{"eventIndex": 6, "data": 8}]
 		}
 	],
 	"eventcount": 9,
@@ -47,58 +47,33 @@
 		[0, 0, 0, 0, 0, 0, 1, 0, 0],
 		[0, 0, 0, 1, 0, 1, 0, 0, 0]
 	],
-	"events": [
+	"activeEvents": [
 		{
-			"activeSense": 1,
+			"id": 0,
 			"channel": 1,
 			"type": "req"
 		},
 		{
-			"activeSense": 0,
-			"channel": 1,
-			"type": "ack"
-		},
-		{
-			"activeSense": 0,
-			"channel": 2,
-			"type": "req"
-		},
-		{
-			"activeSense": 1,
+			"id": 3,
 			"channel": 2,
 			"type": "ack",
 			"dataWidth": 8,
-			"dataWidthMinus1": 7,
 			"data": 16
 		},
 		{
-			"activeSense": 0,
-			"channel": 3,
-			"type": "req"
-		},
-		{
-			"activeSense": 1,
+			"id": 5,
 			"channel": 3,
 			"type": "ack",
 			"dataWidth": 8,
-			"dataWidthMinus1": 7,
 			"data": 8
 		},
 		{
-			"activeSense": 0,
-			"channel": 4,
-			"type": "req",
-			"dataWidth": 8,
-			"dataWidthMinus1": 7,
-			"data": 8
-		},
-		{
-			"activeSense": 1,
+			"id": 7,
 			"channel": 4,
 			"type": "ack"
 		},
 		{
-			"activeSense": 1,
+			"id": 8,
 			"type": "merge"
 		}
 	]

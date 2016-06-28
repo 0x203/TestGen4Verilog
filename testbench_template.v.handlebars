@@ -15,24 +15,27 @@ module main;
     reg [{{width}}:1] {{name}};
     {{/each}}
 
-    // create wires for all ingoing signals and data
+    // set constants for outgoing data values
+    {{#each activeEvents}}
+    {{#if data}}
+    reg [{{dataWidth}}:1] testval{{id}}_data{{channel}} = {{dataWidth}}'d{{data}};
+    {{/if}}
+    {{/each}}
+
+    // create wires and testvals for all ingoing signals and data
     {{#each ingoing}}
     wire {{type}}{{channel}};
     {{#if dataWidth}}
     wire [{{dataWidth}}:1] data{{channel}};
+    {{#each events}}
+    reg [{{../dataWidth}}:1] testval{{eventIndex}}_data{{../channel}} = {{../dataWidth}}'d{{data}}
+    {{/each}}
     {{/if}}
     {{/each}}
 
     //instanciate uut
     // TODO!!!
     Balsa_gcd I0 (r1, a1, r2, a2, d2, r3, a3, d3, r4, a4, d4, reset);
-
-    // set constants for all used data values
-    {{#each events}}
-    {{#if data}}
-    req [{{dataWidthMinus1}}:0] testval{{@index}}_data{{channel}} = {{dataWidth}}'d{{data}};
-    {{/if}}
-    {{/each}}
 
     time start;
 
@@ -67,7 +70,7 @@ module main;
 
         // check all ingoing signals to be 0
         if(
-            {{#each ingoing.signals}}{{name}} !== 0{{#unless @last}} || {{/unless}}{{/each}}
+            {{#each ingoing}}{{type}}{{channel}} !== 0{{#unless @last}} || {{/unless}}{{/each}}
         ) begin
             $display("TB_ERROR: reset; a1=%d, r2=%d, r3=%d, r4=%d", a1, r2, r3, r4);
             handshake = idle;
@@ -87,24 +90,20 @@ module main;
     begin
         didSomething = 1;
         // for every outgoing signal render a block of this
-        if (1 == 0) begin
-            $display("I'll never happen. I'm just a dummy.");
-        {{#each events}}
-        {{#if activeSense}}
-        end else if(
-            ((matrix[{{@index}}] & occured) == 0) && occured[{{@index}}] == 1
-        ) begin
+        {{#each activeEvents}}
+        {{#unless @first}}end else {{/unless}}
+        if(((matrix[{{id}}] & occured) == 0) && occured[{{id}}] == 1)
+        begin
             $display("TB_DEBUG (%d): out {{type}}{{channel}}+", $time);
-            occured[{{@index}}] = 0;
+            occured[{{id}}] = 0;
             {{#if data}}
             // set data channel on predefined value
-            data{{channel}} = testval{{@index}}_data{{channel}};
+            data{{channel}} = testval{{id}}_data{{channel}};
             {{/if}}
             {{#if channel}}
             // set handshake signal
             {{type}}{{channel}} = 1;
             {{/if}}
-        {{/if}}
         {{/each}}
         end else begin
             didSomething = 0;
@@ -125,13 +124,13 @@ module main;
             // one if block for each event on this port
             {{#each events}}
             {{#unless @first}}end else {{/unless}}
-            if(((matrix[{{this}}] & occured) == 0) && occured[{{this}}] == 1) begin
-                {{#if ../dataWidth}}
-                if(data{{../channel}} == testval{{this}}_data{{../channel}}) begin
+            if(((matrix[{{eventIndex}}] & occured) == 0) && occured[{{eventIndex}}] == 1) begin
+                {{#if data}}
+                if(data{{../channel}} == testval{{eventIndex}}_data{{../channel}}) begin
                 {{/if}}
-                occured[{{this}}] = 0;
+                occured[{{eventIndex}}] = 0;
                 doOutputs();
-                {{#if ../dataWidth}}
+                {{#if data}}
                 end else begin
                     $display("TB_ERROR: data{{../channel}} eval; %d != %d", testval{{this}}_data{{../channel}}, data{{../channel}});
                     handshake = idle;
