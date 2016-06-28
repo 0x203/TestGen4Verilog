@@ -10,19 +10,17 @@ module main;
     reg {{name}};
     {{/each}}
 
-    // create wires for all ingoing signals
-    {{#each ingoing.signals}}
-    wire {{name}};
-    {{/each}}
-
     //create regs for all outgoing data-wires
     {{#each outgoing.data}}
     reg [{{width}}:1] {{name}};
     {{/each}}
 
-    //create wires for all ingoing data-wires
-    {{#each ingoing.data}}
-    wire [{{width}}:1] {{name}};
+    // create wires for all ingoing signals and data
+    {{#each ingoing}}
+    wire {{type}}{{channel}};
+    {{#if dataWidth}}
+    wire [{{dataWidth}}:1] data{{channel}};
+    {{/if}}
     {{/each}}
 
     //instanciate uut
@@ -118,27 +116,28 @@ module main;
     end
     endtask
 
-    // TODO: don't use events here, but passive ports.
-    // there could be multiple events on the same port, this would got wrong with this style here
-    {{#each events}}
-    {{#unless activeSense}}
+    {{#each ingoing}}
     always @ (posedge {{type}}{{channel}}) begin
         if(handshake == active) begin
             $display("TB_DEBUG (%d): in {{type}}{{channel}}+{{#if
-                data}}, data{{channel}}=%d{{/if}}", $time{{#if
-                data}}, data{{channel}}{{/if}});
-            if(((matrix[{{@index}}] & occured) == 0) && occured[{{@index}}] == 1) begin
-                {{#if data}}
-                if(data{{channel}} == testval{{@index}}_data{{channel}}) begin
+                dataWidth}}, data{{channel}}=%d{{/if}}", $time{{#if
+                dataWidth}}, data{{channel}}{{/if}});
+            // one if block for each event on this port
+            {{#each events}}
+            {{#unless @first}}end else {{/unless}}
+            if(((matrix[{{this}}] & occured) == 0) && occured[{{this}}] == 1) begin
+                {{#if ../dataWidth}}
+                if(data{{../channel}} == testval{{this}}_data{{../channel}}) begin
                 {{/if}}
-                occured[{{@index}}] = 0;
+                occured[{{this}}] = 0;
                 doOutputs();
-                {{#if data}}
+                {{#if ../dataWidth}}
                 end else begin
-                    $display("TB_ERROR: data{{channel}} eval; %d != %d", testval{{@index}}_data{{channel}}, data{{channel}});
+                    $display("TB_ERROR: data{{../channel}} eval; %d != %d", testval{{this}}_data{{../channel}}, data{{../channel}});
                     handshake = idle;
                 end
                 {{/if}}
+            {{/each}}
             end else begin
                 $display("TB_ERROR: {{type}}{{channel}}+");
                 handshake = idle;
@@ -160,7 +159,6 @@ module main;
         end
     end
 
-    {{/unless}}
     {{/each}}
 
     // TODO: at the very last event: check if it's the last and check for remaining handshakes

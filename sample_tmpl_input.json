@@ -11,17 +11,29 @@
 			{"name": "data3", "width": 8}
 		]
 	},
-	"ingoing": {
-		"signals": [
-			{"name": "ack1"},
-			{"name": "req2"},
-			{"name": "req3"},
-			{"name": "req4"}
-		],
-		"data": [
-			{"name": "data4", "width": 8}
-		]
-	},
+	"ingoing": [
+		{
+			"type": "ack",
+			"channel": 1,
+			"events": [1]
+		},
+		{
+			"type": "req",
+			"channel": 2,
+			"events": [2]
+		},
+		{
+			"type": "req",
+			"channel": 3,
+			"events": [4]
+		},
+		{
+			"type": "req",
+			"channel": 4,
+			"dataWidth": 8,
+			"events": [6]
+		}
+	],
 	"eventcount": 9,
 	"eventcountMinusOne": 8,
 	"matrix": [
