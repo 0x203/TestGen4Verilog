@@ -148,10 +148,9 @@ module main;
     always @ (negedge {{type}}{{channel}}) begin
         if(handshake == active) begin
             $display("TB_DEBUG (%d): in {{type}}{{channel}}-", $time);
-            // TODO use helper to create correct counter-type here
-            if(a4 == 1) begin
-                $display("TB_DEBUG (%d): out a4-", $time);
-                a4 = 0;
+            if({{counterType type}}{{channel}} == 1) begin
+                $display("TB_DEBUG (%d): out {{counterType type}}{{channel}}-", $time);
+                {{counterType type}}{{channel}} = 0;
             end else begin
                 $display("TB_ERROR: {{type}}{{channel}}-");
                 handshake = idle;
