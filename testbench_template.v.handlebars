@@ -120,9 +120,10 @@ module main;
                 dataWidth}}, data{{channel}}=%d{{/if}}", $time{{#if
                 dataWidth}}, data{{channel}}{{/if}});
             // one if block for each event on this port
+            if(1 == 0) begin
+                $display("If you see me... that would be weird.");
             {{#each events}}
-            {{#unless @first}}end else {{/unless
-            }}if(((matrix[{{eventIndex}}] & occured) == 0) && occured[{{eventIndex}}] == 1) begin
+            end else if(((matrix[{{eventIndex}}] & occured) == 0) && occured[{{eventIndex}}] == 1) begin
                 {{#if data}}
                 if(data{{../channel}} == testval{{eventIndex}}_data{{../channel}}) begin
                 {{/if}}
