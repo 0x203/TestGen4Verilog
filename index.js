@@ -12,8 +12,6 @@ program
 	.option('-t, --template [file]', 'the file the template is read from, defaults to ' + STANDARD_OUTFILE)
 	.arguments('<testfile>')
 	.action(function(testfile){
-		console.log(program);
-		console.log(program.outfile);
 		const outfile = program.output || STANDARD_OUTFILE;
 		const templatefile = program.template || STANDARD_TEMPLATE;
 		console.log("Will read test from '%s' and write generated testbench to '%s'.", testfile, outfile);
