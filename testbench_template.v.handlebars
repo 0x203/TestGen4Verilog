@@ -61,11 +61,11 @@ module main;
         handshake = resetphase;
         #10000
         // set all outgoing signals to 0 and data to X
-        {{#each outgoing.signals}}
-        {{name}} = 0;
-        {{/each}}
-        {{#each outgoing.data}}
-        {{name}} = {{width}}'bX;
+        {{#each outgoing}}
+        {{type}}{{channel}} = 0;
+        {{#if dataWidth}}
+        data{{channel}} = {{dataWidth}}'bX;
+        {{/if}}
         {{/each}}
         reset = 0;
         #50000 reset = 1;
