@@ -12,8 +12,8 @@ handlebars.registerHelper('counterType', function(signalType) {
 		return "Wrong signal type found!!! expected ack or req! argh!!";
 });
 
-handlebars.registerHelper('ingoingRequest', function(signalType, options) {
-   if(signalType == "req") {
+handlebars.registerHelper('ingoingAcknowledge', function(signalType, options) {
+   if(signalType == "ack") {
     return options.fn(this);
   } else {
     return options.inverse(this);
