@@ -125,17 +125,16 @@ module main;
             $display("TB_DEBUG (%d): in {{type}}{{channel}}+{{#if
                 dataWidth}}, data{{channel}}=%d{{/if}}", $time{{#if
                 dataWidth}}, data{{channel}}{{/if}});
+            {{#if events}}
             // one if block for each event on this port
-            if(1 == 0) begin
-                $display("If you see me... that would be weird.");
-            {{#each events}}
-            end else if(((matrix[{{eventIndex}}] & occured) == 0) && occured[{{eventIndex}}] == 1) begin
-                {{#if data}}
+            {{#each events}}{{#unless @first}}
+            end else {{/unless}}if(((matrix[{{eventIndex}}] & occured) == 0) && occured[{{eventIndex}}] == 1) begin
+                {{#if ../dataWidth}}
                 if(data{{../channel}} == testval{{eventIndex}}_data{{../channel}}) begin
                 {{/if}}
                 occured[{{eventIndex}}] = 0;
                 doOutputs();
-                {{#if data}}
+                {{#if ../dataWidth}}
                 end else begin
                     $display("TB_ERROR: data{{../channel}} eval; %d != %d", testval{{eventIndex}}_data{{../channel}}, data{{../channel}});
                     handshake = idle;
@@ -146,6 +145,10 @@ module main;
                 $display("TB_ERROR: {{type}}{{channel}}+");
                 handshake = idle;
             end
+            {{else}}
+            $display("TB_ERROR: {{type}}{{channel}}+");
+            handshake = idle;
+            {{/if}}
         end
     end
 
