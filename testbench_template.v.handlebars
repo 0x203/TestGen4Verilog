@@ -109,6 +109,11 @@ module main;
             {{type}}{{channel}} = 1;
             {{/if}}
         {{/each}}
+        {{#each mergeEvents}}
+        end else if(((matrix[{{this}}] & occured) == 0) && occured[{{this}}] == 1)
+        begin
+            occured[{{this}}] = 0;
+        {{/each}}
         end else begin
             didSomething = 0;
         end

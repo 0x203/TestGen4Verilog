@@ -55,6 +55,7 @@ function transformData(test) {
 
 	const eventcount = test.nodes.length;
 	const matrix = createMatrix(eventcount, test.edges);
+	const mergeEvents = test.nodes.filter(event => event.type == "Merge").map(event => event.id - 1);
 
 	const {uutParameters, outgoing, ingoing, activeEvents} = tranformPortsAndEvents(test.ports, test.nodes);
 
@@ -67,6 +68,7 @@ function transformData(test) {
 		ingoing,
 		eventcount,
 		eventcountMinusOne: eventcount - 1,
+		mergeEvents,
 		activeEvents
 	};
 }
