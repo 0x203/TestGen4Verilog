@@ -137,7 +137,7 @@ module main;
                 doOutputs();
                 {{#if data}}
                 end else begin
-                    $display("TB_ERROR: data{{../channel}} eval; %d != %d", testval{{this}}_data{{../channel}}, data{{../channel}});
+                    $display("TB_ERROR: data{{../channel}} eval; %d != %d", testval{{eventIndex}}_data{{../channel}}, data{{../channel}});
                     handshake = idle;
                 end
                 {{/if}}
