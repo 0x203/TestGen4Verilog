@@ -159,16 +159,27 @@ module main;
     always @ (negedge {{type}}{{channel}}) begin
         if(handshake == active) begin
             $display("TB_DEBUG (%d): in {{type}}{{channel}}-", $time);
-            if({{counterType type}}{{channel}} == 1) begin
-                $display("TB_DEBUG (%d): out {{counterType type}}{{channel}}-", $time);
-                {{counterType type}}{{channel}} = 0;
-            end else begin
-                $display("TB_ERROR: {{type}}{{channel}}-");
+            {{#ingoingAcknowledge type}}{{#activateChannel channel}}
+                if({{#each ../ingoing
+                    }}{{type}}{{channel}} === 0{{#unless @last}} && {{/unless
+                }}{{/each}})
+                begin
+                    $display("TB_SUCCESS: %d", ($time - start));
+                end else begin
+                    $display("TB_ERROR: ack1- signals");
+                end
                 handshake = idle;
-            end
+            {{/activateChannel}}{{else}}
+                if({{counterType type}}{{channel}} == 1) begin
+                    $display("TB_DEBUG (%d): out {{counterType type}}{{channel}}-", $time);
+                    {{counterType type}}{{channel}} = 0;
+                end else begin
+                    $display("TB_ERROR: {{type}}{{channel}}-");
+                    handshake = idle;
+                end
+            {{/ingoingAcknowledge}}
         end
     end
-
     {{/each}}
 
     // TODO: at the very last event: check if it's the last and check for remaining handshakes

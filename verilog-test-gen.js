@@ -20,6 +20,14 @@ handlebars.registerHelper('ingoingAcknowledge', function(signalType, options) {
 	}
 });
 
+handlebars.registerHelper('activateChannel', function(activateChannel, options) {
+   if(activateChannel == 1) {
+    return options.fn(this);
+  } else {
+    return options.inverse(this);
+	}
+});
+
 function generateVerilogTest(test, template, cb) {
 	//try {
 		console.log('Pre-compiling template.');
