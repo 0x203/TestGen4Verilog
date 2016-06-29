@@ -133,7 +133,12 @@ module main;
                 if(data{{../channel}} == testval{{eventIndex}}_data{{../channel}}) begin
                 {{/if}}
                 occured[{{eventIndex}}] = 0;
+                {{#ingoingRequest ../type}}
                 doOutputs();
+                {{else}}
+                $display("TB_DEBUG (%d): out {{counterType ../type}}{{channel}}-", $time);
+                {{counterType ../type}}{{../channel}} = 0;
+                {{/ingoingRequest}}
                 {{#if ../dataWidth}}
                 end else begin
                     $display("TB_ERROR: data{{../channel}} eval; %d != %d", testval{{eventIndex}}_data{{../channel}}, data{{../channel}});

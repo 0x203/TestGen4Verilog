@@ -12,8 +12,16 @@ handlebars.registerHelper('counterType', function(signalType) {
 		return "Wrong signal type found!!! expected ack or req! argh!!";
 });
 
+handlebars.registerHelper('ingoingRequest', function(signalType, options) {
+   if(signalType == "req") {
+    return options.fn(this);
+  } else {
+    return options.inverse(this);
+	}
+});
+
 function generateVerilogTest(test, template, cb) {
-	try {
+	//try {
 		console.log('Pre-compiling template.');
 		const compiledTemplate = handlebars.compile(template);
 		console.log('Transforming test to usable data by template.');
@@ -22,9 +30,9 @@ function generateVerilogTest(test, template, cb) {
 		console.log('Compiling template.');
 		const rendered = compiledTemplate(transformed);
 		cb(null, rendered)
-	} catch(err) {
-		return cb(err);
-	}
+	//} catch(err) {
+	//	return cb(err);
+	//}
 }
 
 function transformData(test) {
