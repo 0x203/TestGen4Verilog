@@ -1,8 +1,6 @@
 `timescale 1ps/1ps
 
 module main;
-    //TODO Norman: ist [8:1] für Daten okay?
-
     // create regs for all outgoing signals including data
     reg reset;
 {{#each outgoing}}
@@ -186,12 +184,4 @@ module main;
         end
     end
     {{/each}}
-
-    // TODO: at the very last event: check if it's the last and check for remaining handshakes
-    // Problem: what if there are multiple possible last events (which can come in parallel) or such things?!
-
-    //  if(occured !== 0) begin
-    //      $display("TB_ERROR: occured");
-    //      handshake = idle;
-    //  end
 endmodule
