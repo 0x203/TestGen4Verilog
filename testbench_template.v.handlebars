@@ -38,7 +38,7 @@ module main;
     // set the adjacency matrix
     reg [{{eventcountMinusOne}}:0]matrix[0:{{eventcountMinusOne}}] = '{
       {{#each matrix}}
-        {{eventcount}}'b{{#each .}}{{.}}{{/each}}{{#if @last}} }; {{else}},
+        {{../eventcount}}'b{{#each .}}{{.}}{{/each}}{{#if @last}} }; {{else}},
 {{/if}}
       {{/each}}
 
