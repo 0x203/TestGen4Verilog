@@ -1,5 +1,6 @@
 {
    "name": "Balsa_gcd",
+   "resetTime": 50000,
    "ports": [
       {
          "activeSense": false,

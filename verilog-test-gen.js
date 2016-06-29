@@ -44,6 +44,7 @@ function transformData(test) {
 
 	return {
 		uutName: test.name,
+		resetTime: test.resetTime || 10000,
 		uutParameters,
 		matrix,
 		outgoing,

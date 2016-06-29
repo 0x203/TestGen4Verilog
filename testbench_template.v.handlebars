@@ -68,9 +68,9 @@ module main;
         {{/if}}
         {{/each}}
         reset = 0;
-        #50000 reset = 1;
-        #50000 reset = 0;
-        #50000;
+        #{{resetTime}} reset = 1;
+        #{{resetTime}} reset = 0;
+        #{{resetTime}};
 
         // check all ingoing signals to be 0
         if(
