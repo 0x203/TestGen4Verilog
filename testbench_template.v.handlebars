@@ -25,7 +25,7 @@ module main;
     {{#if dataWidth}}
         wire [{{dataWidth}}:1] data{{channel}};
         {{#each events}}
-            reg [{{../dataWidth}}:1] testval{{eventIndex}}_data{{../channel}} = {{../dataWidth}}'d{{data}}
+            reg [{{../dataWidth}}:1] testval{{eventIndex}}_data{{../channel}} = {{../dataWidth}}'d{{data}};
         {{/each}}
     {{/if}}
 {{/each}}
@@ -50,7 +50,13 @@ module main;
     enum { idle, active, resetphase } handshake;
 
     initial begin
-        $display("TB_START");
+        $display("TB_START: Outgoing:{{#each
+        activeEvents}}{{#if data
+            }}data{{channel}}_{{id}} = {{data}}{{#unless @last}}, {{/unless}}{{/if
+        }}{{/each}}; Ingoing: {{#each ingoing}}{{#if dataWidth}}{{#each events
+            }}data{{../channel}}_{{eventIndex}} = {{data}}, {{/each
+        }}{{/if}}{{/each}}");
+
 
         handshake = resetphase;
         #10000
