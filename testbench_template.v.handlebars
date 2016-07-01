@@ -48,44 +48,57 @@ module main;
     enum { idle, active, resetphase } handshake;
 
     initial begin
-        $display("TB_START: Outgoing:{{#each
-        activeEvents}}{{#if data
-            }}data{{channel}}_{{id}} = {{data}}{{#unless @last}}, {{/unless}}{{/if
-        }}{{/each}}; Ingoing: {{#each ingoing}}{{#if dataWidth}}{{#each events
-            }}data{{../channel}}_{{eventIndex}} = {{data}}, {{/each
-        }}{{/if}}{{/each}}");
-
-
-        handshake = resetphase;
-        #10000
-        // set all outgoing signals to 0 and data to X
-        {{#each outgoing}}
-        {{type}}{{channel}} = 0;
-        {{#if dataWidth}}
-        data{{channel}} = {{dataWidth}}'bX;
-        {{/if}}
-        {{/each}}
-        reset = 0;
-        #{{resetTime}} reset = 1;
-        #{{resetTime}} reset = 0;
-        #{{resetTime}};
-
-        // check all ingoing signals to be 0
-        if(
-            {{#each ingoing}}{{type}}{{channel}} !== 0{{#unless @last}} || {{/unless}}{{/each}}
-        ) begin
-            $display("TB_ERROR: reset; {{#each ingoing}}{{type}}{{channel}}=%d{{#unless @last}}, {{/unless}}{{/each}}", {{#each ingoing}}{{type}}{{channel}}{{#unless @last}}, {{/unless}}{{/each}});
-            handshake = idle;
-            $finish;
-        end
-
-        start = $time;
-        handshake = active;
-        doOutputs();
-
-        wait(handshake == idle);
+        run();
         $finish;
     end
+
+    task run();
+        fork
+        begin
+            $display("TB_START: Outgoing:{{#each
+            activeEvents}}{{#if data
+                }}data{{channel}}_{{id}} = {{data}}{{#unless @last}}, {{/unless}}{{/if
+            }}{{/each}}; Ingoing: {{#each ingoing}}{{#if dataWidth}}{{#each events
+                }}data{{../channel}}_{{eventIndex}} = {{data}}, {{/each
+            }}{{/if}}{{/each}}");
+
+
+            handshake = resetphase;
+            #10000
+            // set all outgoing signals to 0 and data to X
+            {{#each outgoing}}
+            {{type}}{{channel}} = 0;
+            {{#if dataWidth}}
+            data{{channel}} = {{dataWidth}}'bX;
+            {{/if}}
+            {{/each}}
+            reset = 0;
+            #{{resetTime}} reset = 1;
+            #{{resetTime}} reset = 0;
+            #{{resetTime}};
+
+            // check all ingoing signals to be 0
+            if(
+                {{#each ingoing}}{{type}}{{channel}} !== 0{{#unless @last}} || {{/unless}}{{/each}}
+            ) begin
+                $display("TB_ERROR: reset; {{#each ingoing}}{{type}}{{channel}}=%d{{#unless @last}}, {{/unless}}{{/each}}", {{#each ingoing}}{{type}}{{channel}}{{#unless @last}}, {{/unless}}{{/each}});
+                handshake = idle;
+                $finish;
+            end
+
+            start = $time;
+            handshake = active;
+            doOutputs();
+
+            wait(handshake == idle);
+        end
+        begin
+            #{{timeout}};
+            $display("TB_ERROR: timeout");
+        end
+        join_any
+        disable fork;
+    endtask
 
     task doOutputs;
         bit didSomething;

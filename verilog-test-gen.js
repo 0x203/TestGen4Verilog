@@ -62,6 +62,7 @@ function transformData(test) {
 	return {
 		uutName: test.name,
 		resetTime: test.resetTime || 10000,
+		timeout: test.timeoutTime || 100000,
 		uutParameters,
 		matrix,
 		outgoing,
